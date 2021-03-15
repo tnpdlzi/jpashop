@@ -18,14 +18,14 @@ public class Order {
     private Long id;
 
     // 연관관계의 주인
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
 
@@ -35,4 +35,26 @@ public class Order {
     @Enumerated(EnumType.STRING) // EnumType을 오디널, 스트링 넣을 수 있다. 디폴트는 오디널. 오디널은 1, 2, 3, 4 숫자로 들어간다.
     // 그러면 중간에 다른 상태가 들어가면 망한다. 그래서 오디널 절대 쓰면 안되고 꼭 스트링으로 쓰자.
     private OrderStatus status; // 주문 상태 [ORDER, CANCEL]
+
+
+    // == 연관관계 편의 메서드 ==//
+    public void setMember(Member member) {
+        this.member = member;
+
+        // 오더에서 멤버 셋만 해도  오더 셋도 되게 해버린다. 원래는 양쪽에 다 입력을 해 주어야 하는데.
+        member.getOrders().add(this);
+    }
+
+    public void addOrderItem(OrderItem orderItem) {
+        orderItems.add(orderItem);
+        // 넘어온 orderItem에게도 자신을 set 해 준다.
+        orderItem.setOrder(this);
+    }
+
+    public void setDelivery(Delivery delivery) {
+        this.delivery = delivery;
+        // delivery에도 오더를 세팅해 준다.
+        delivery.setOrder(this);
+    }
+
 }

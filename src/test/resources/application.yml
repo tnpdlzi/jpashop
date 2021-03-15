@@ -1,0 +1,32 @@
+#테스트는 얘가 우선권을 갖는다.  메인 디렉토리의 application.yml은 무시된다.
+# 근데 부트에서 더 놀라운건 밑에 디비 연결 부분 다 없어도 된다.
+# 별도의 설정이 없으면 스프링 부트가 메모리 모드로 돌려버리기 때문.
+
+
+spring:
+#  datasource:
+##    url: jdbc:h2:tcp://localhost/~/h2db/jpashop 얘를 메모리로 바꿔준다.
+#    # h2가 자바기 때문에 jvm안에서 메모리 DB를 띄울 수 있다.
+#    url: jdbc:h2:mem:test
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
+#
+#  jpa:
+#    hibernate:
+##      자동으로 테이블을 만들어주는 모드. 애플리케이션 생성 시점에 가지고있던 엔티티 다 지우고 새로 생성
+#      ddl-auto: create
+#    properties:
+#      hibernate:
+##        show_sql: true    --> System.out에 찍기 때문에 안 써야한다.
+#        format_sql: true
+
+# 부트는 create-drop으로 실행
+#      ddl-auto: create-drop --> 다 똑같은데 마지막에 드랍 해준다.
+
+logging:
+  level:
+    # 얘는 로그를 통해 SQL 찍는걸 보여준다.
+    org.hibernate.SQL: debug
+    # 얘를 써주면 밑에 binding parameter 해서 순서와 타입, 파라미터 값을 찍어준다.
+    org.hibernate.type: trace

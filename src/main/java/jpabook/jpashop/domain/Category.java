@@ -30,7 +30,7 @@ public class Category {
     private List<Item> items = new ArrayList<>();
 
     // 카테고리 구조를 어떡하지? 부모, 자식을 쭉 볼 수 있어야 하는데?
-    @ManyToOne // 내 부모! 내 부모니까 매니 투 원이다. 부모 하나니까
+    @ManyToOne(fetch = FetchType.LAZY) // 내 부모! 내 부모니까 매니 투 원이다. 부모 하나니까
     @JoinColumn(name = "parent_id")
     private Category parent;
 
@@ -38,4 +38,10 @@ public class Category {
     @OneToMany(mappedBy = "parent") // 셀프로 양방향 연관관계를 걸었다. 이름만 내꺼지 그냥 다른 애랑 맺는거랑 똑같이 하면 된다.
     private List<Category> child = new ArrayList<>();
 
+    // == 연관관계 편의 메서드 == //
+    public void addChildCategory(Category child) {
+        this.child.add(child);
+        // child 넣을 때 부모에도 넣어준다.
+        child.setParent(this);
+    }
 }
