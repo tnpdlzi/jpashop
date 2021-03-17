@@ -1,6 +1,7 @@
 package jpabook.jpashop.domain;
 
 import jpabook.jpashop.domain.item.Item;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.aspectj.weaver.ast.Or;
