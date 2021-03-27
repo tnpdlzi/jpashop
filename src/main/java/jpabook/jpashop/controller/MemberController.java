@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @Controller
@@ -44,5 +45,12 @@ public class MemberController {
         memberService.join(member); // 저장 된다.
         // 저장 된 다음 리다이렉트로 홈으로 보내버린다.
         return "redirect:/";
+    }
+
+    @GetMapping("/members")
+    public String list(Model model) {
+        List<Member> members = memberService.findMembers(); // 원래는 멤버를 그대로 뿌리는 게 아닌 DTO를 사용해 꼭 필요한 애만 뿌려야 한다.
+        model.addAttribute("members", members);
+        return "members/memberList";
     }
 }
