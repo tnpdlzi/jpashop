@@ -17,7 +17,8 @@ public class ItemRepository {
         if (item.getId() == null) { // item은 저장하기 전에는 id 값이 없다.
             em.persist(item);
         } else {
-            em.merge(item);
+            // 실무에서는 이렇게 merge 쓰는 것 보다 updateItem같이 변경 감지를 쓰는 것이 훨씬 좋다. 이건 웬만하면 쓰지 말자.
+            em.merge(item); // 이게 병합 방법. 준영속성 엔티티를 영속성 엔티티로 변경시키는 방법.
         }
     }
 
