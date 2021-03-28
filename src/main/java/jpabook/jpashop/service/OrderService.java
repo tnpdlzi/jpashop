@@ -8,9 +8,12 @@ import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.repository.ItemRepository;
 import jpabook.jpashop.repository.MemberRepository;
 import jpabook.jpashop.repository.OrderRepository;
+import jpabook.jpashop.repository.OrderSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
@@ -65,12 +68,12 @@ public class OrderService {
         order.cancel(); // 엔티티 안에서 데이터만 바꿔주면 jpa가 바뀐 변경 포인트들을 감지해서 디비에 업데이트 쿼리가 날라간다.
     }
 
-    // 검색
+    // 검색. 이런 단순 위임의 경우 그냥 바로 repository로 접근하게 해도 된다.
     /**
      * 주문 검색
      */
-//    public List<Order> findOrders(OrderSearch orderSearch) {
-//        return orderRepository.findAll(orderSearch);
-//    }
+    public List<Order> findOrders(OrderSearch orderSearch) {
+        return orderRepository.findAllByString(orderSearch);
+    }
 
 }
