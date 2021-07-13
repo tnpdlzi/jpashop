@@ -24,6 +24,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-devtools'
+	// 지연로딩인 경우 프록시 값을 뿌리지 말라고 설치해주는 모듈.
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
 //	얘가 파라미터를 찍어줌. p6spy 해서 원본이 출력되고 그 다음 파라미터 바인딩 된 것이 출력된다.
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.6'
 
