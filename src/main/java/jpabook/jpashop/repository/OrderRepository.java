@@ -104,4 +104,17 @@ public class OrderRepository {
         TypedQuery<Order> query = em.createQuery(cq).setMaxResults(1000); //최대 1000건
         return query.getResultList();
     }
+
+
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery(
+                // join fetch로 한 방에 가져오고 싶다!
+                // select 절에서 한 방에 다 가져온다! 레이지 무시하고 값을 다 채워서 가져온다!
+                // 이게 패치조인!
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class
+        ).getResultList();
+    }
+
 }

@@ -1,5 +1,6 @@
 package jpabook.jpashop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ public class Delivery {
     @Column(name = "delivery_id")
     private Long id;
 
+    @JsonIgnore // 양방향 연관관계에서 한 쪽은 JsonIgnore를 해 주어야 무한 루프에 빠지지 않는다.
     @OneToOne(mappedBy = "delivery", fetch = FetchType.LAZY)
     private Order order;
 

@@ -1,5 +1,6 @@
 package jpabook.jpashop.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +24,7 @@ public class Member {
     private Address address;
 
     // 연관관계의 거울
+    @JsonIgnore //양방향 연관관계에서는 한 쪽을 JsonIgnore해 주어야 한다.
     @OneToMany(mappedBy = "member") // order table에 있는 멤버 테이블에 의해 매핑이 된거야! 나는 매핑된 거울일 뿐이다! 여기 값을 넣어도 포린키 값이 변경되지 않는다.
     private List<Order> orders = new ArrayList<>();
 
