@@ -12,11 +12,11 @@ public class JpashopApplication {
 		SpringApplication.run(JpashopApplication.class, args);
 	}
 
-//	// 사실 이건 하면 안 된다. 엔티티를 외부에 노출하면 안 되기 때문. DTO 변환을 사용하자.
-//	@Bean
-//	Hibernate5Module hibernate5Module() {
-//		Hibernate5Module hibernate5Module = new Hibernate5Module();
+	// 사실 이건 하면 안 된다. 엔티티를 외부에 노출하면 안 되기 때문. DTO 변환을 사용하자.
+	@Bean
+	Hibernate5Module hibernate5Module() {
+		Hibernate5Module hibernate5Module = new Hibernate5Module();
 //		hibernate5Module.configure(Hibernate5Module.Feature.FORCE_LAZY_LOADING, true);
-//		return hibernate5Module;
-//	}
+		return hibernate5Module;
+	}
 }

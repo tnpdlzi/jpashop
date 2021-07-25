@@ -22,6 +22,7 @@ public class OrderItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    // 양방향은 꼭 JsonIgnore 걸어줄 것.
     @JsonIgnore // 양방향 연관관계에서 한 쪽은 JsonIgnore를 해 주어야 무한 루프에 빠지지 않는다.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
