@@ -117,4 +117,21 @@ public class OrderRepository {
         ).getResultList();
     }
 
+    // 하나의 아이디에 같은게 두번 나가버린다. join이라서. 하지만 distinct로 중복 제거되고 그로 인해 쿼리가 한 번만 나간다.
+    // 근데 이렇게 하면 페이징이 불가능. 일대다를 패치조인 하는 순간 페이징 불가능.
+    public List<Order> findAllwithItem() {
+        return em.createQuery(
+                "select distinct o from Order o" + // distinct로 중복 제거. 근데 디비의 distinct는 한 줄이 전부 똑같아야 제거가 됨. 근데 그걸 JPA에서 자체적으로 오더를 가져올 때 오더가 같은 id값이면 중복을 제거해 준다.
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        // order와 items를 조인한다. 2개와 4개의 조인. order가 4개가 된 것. 조인하면 orderitem 개수만큼 맞춰서 늘어버린다. 중복된 데이터가 나와버림. 그래서 distinct를 넣으면 됨.
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item", Order.class)
+//                .setFirstResult(1)
+//                .setMaxResults(100)
+                // 이것들이 불가능하다. 페이징 불가능. 메모리에서 페이징처리 해버림. 잘못하면 out of memory 떠버린다. 그리고 우리가 원한 건 중복처리 된 걸 가져오고 싶은데 이게 디비 쿼리 입장에서는 조인된 거가 기준이라 원하는 데로 페이징이 안 된다. 일대다 에서는 패치조인 했을 때 패치조인 하면 안 된다.
+                .getResultList();
+        // 컬렉션 패치조인을 1개만 써야한다. 둘 이상에 페치조인 해 버리면 데이터가 부정확하게 나올 수 있음.
+    }
+
 }
