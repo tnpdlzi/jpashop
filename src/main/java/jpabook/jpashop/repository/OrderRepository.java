@@ -134,4 +134,16 @@ public class OrderRepository {
         // 컬렉션 패치조인을 1개만 써야한다. 둘 이상에 페치조인 해 버리면 데이터가 부정확하게 나올 수 있음.
     }
 
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                // join fetch로 한 방에 가져오고 싶다!
+                // select 절에서 한 방에 다 가져온다! 레이지 무시하고 값을 다 채워서 가져온다!
+                // 이게 패치조인!
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }

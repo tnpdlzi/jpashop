@@ -4,11 +4,13 @@ import jpabook.jpashop.domain.Category;
 import jpabook.jpashop.exception.NotEnoughStockException;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//@BatchSize(size = 100) // 컬렉션이 아닐 경우 여기에 이렇게 적어준다. 특정하게 값을 정하고 싶을 때.
 @Entity
 // 상속관계 전략을 부모 테이블에 잡아주어야 한다. 우리는 싱글 테이블 전략을 쓴다.
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE) // singletable, table_per_class, joined 가 있다. joined는 가장 정구화된 스타일. singletable은 한 테이블에 다 때려박는거 table_per_class는 자식걸로만 테이블을 나누는 전략
