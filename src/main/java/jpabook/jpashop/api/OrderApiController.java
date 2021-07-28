@@ -10,6 +10,8 @@ import jpabook.jpashop.repository.order.query.OrderFlatDto;
 import jpabook.jpashop.repository.order.query.OrderItemQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryRepository;
+import jpabook.jpashop.service.query.OrderDto;
+import jpabook.jpashop.service.query.OrderQueryService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +23,8 @@ import java.util.List;
 
 import static java.util.stream.Collectors.*;
 
+// 엔티티 조회 방식을 먼저 사용. V3.1을 쓰자
+// 그걸로 안 된다면 DTO 직접 조회 사용. V5가 좋다.
 @RestController
 @RequiredArgsConstructor
 public class OrderApiController {
@@ -32,6 +36,8 @@ public class OrderApiController {
     public List<Order> ordersV1() {
         List<Order> all = orderRepository.findAllByString(new OrderSearch());
         for (Order order : all) {
+            // 지연로딩 일어난다.
+            // 근데 OSIV가 false일 경우 could not initialize proxy에러가 난다. 컨트롤러에서 호출되기때문이다. --> 이걸 트랜잭션 안으로 가져가거나 페치조인을 사용하면된다.
             order.getMember().getName();
             order.getDelivery().getAddress();
 
@@ -48,11 +54,20 @@ public class OrderApiController {
     public List<OrderDto> ordersV2() {
         List<Order> orders = orderRepository.findAllByString(new OrderSearch());
         // orders를 OrderDto로 변환
+        // 얘도 OSIV false의 경우 에러가 터진다. 이걸 트랜잭션 안으로 들고가면 된다. OrderQuerySerivce를 만드는 것이다.
+        // 이런 변환 로직 자체를 QueryService로 가져가는 거다.
         List<OrderDto> result = orders.stream()
                 .map(o -> new OrderDto(o))
                 .collect(toList());
 
         return result;
+    }
+
+    private final OrderQueryService orderQueryService;
+    @GetMapping("/api/osiv/orders")
+    public List<jpabook.jpashop.service.query.OrderDto> ordersV_OSIV() {
+        // 변환 로직이 트랜잭션 안에서 동작.
+        return orderQueryService.ordersV3();
     }
 
     // 코드는 같은데 쿼리가 한 번 나가도록 튜닝 됨.
