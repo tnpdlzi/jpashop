@@ -6,9 +6,10 @@ import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
+import jpabook.jpashop.repository.order.query.OrderFlatDto;
+import jpabook.jpashop.repository.order.query.OrderItemQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryDto;
 import jpabook.jpashop.repository.order.query.OrderQueryRepository;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,7 +50,7 @@ public class OrderApiController {
         // orders를 OrderDto로 변환
         List<OrderDto> result = orders.stream()
                 .map(o -> new OrderDto(o))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return result;
     }
@@ -60,7 +62,7 @@ public class OrderApiController {
         // orders를 OrderDto로 변환
         List<OrderDto> result = orders.stream()
                 .map(o -> new OrderDto(o))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return result;
     }
@@ -76,7 +78,7 @@ public class OrderApiController {
         // orders를 OrderDto로 변환 프록시 초기화 되면서 orderItems 가져온다. 그리고 각 아이템스의 아이템도 가져온다. 엄청난 쿼리량.
         List<OrderDto> result = orders.stream()
                 .map(o -> new OrderDto(o))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return result;
     }
@@ -84,6 +86,31 @@ public class OrderApiController {
     @GetMapping("/api/v4/orders")
     public List<OrderQueryDto> ordersV4() {
         return orderQueryRepository.findOrderQueryDtos();
+    }
+
+    // 패치조인보다 data select 양은 줄지만 코드가 길다.
+    @GetMapping("/api/v5/orders")
+    public List<OrderQueryDto> ordersV5() {
+        return orderQueryRepository.findAllByDto_optimization();
+    }
+
+    // 한 방 쿼리로 된다는 장점. 쿼리가 한 번 밖에 실행되지 않는다. 페이징은 불가능.
+    @GetMapping("/api/v6/orders")
+    public List<OrderQueryDto> ordersV6() {
+        // 이러면 스펙이 맞지 않는다. OrderQueryDto 스펙에 맞추고 싶다! 그럼 발라내면 된다.
+//        return orderQueryRepository.findAllByDto_flat();
+        // 이렇게 플랫을 돌려서 오더 쿼리 디티오로 바꿔준다.
+        List<OrderFlatDto> flats = orderQueryRepository.findAllByDto_flat();
+        return flats.stream()
+                .collect(groupingBy(o -> new OrderQueryDto(o.getOrderId(),
+                                o.getName(), o.getOrderDate(), o.getOrderStatus(), o.getAddress()),
+                        mapping(o -> new OrderItemQueryDto(o.getOrderId(),
+                                o.getItemName(), o.getOrderPrice(), o.getCount()), toList())
+                )).entrySet().stream()
+                .map(e -> new OrderQueryDto(e.getKey().getOrderId(),
+                        e.getKey().getName(), e.getKey().getOrderDate(), e.getKey().getOrderStatus(),
+                        e.getKey().getAddress(), e.getValue()))
+                .collect(toList());
     }
 
 
@@ -114,7 +141,7 @@ public class OrderApiController {
 //            orderItems = order.getOrderItems();
             orderItems = order.getOrderItems().stream()
                     .map(orderItem -> new OrderItemDto(orderItem))
-                    .collect(Collectors.toList());
+                    .collect(toList());
         }
 
     }
