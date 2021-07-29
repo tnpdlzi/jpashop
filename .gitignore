@@ -5,6 +5,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### Query Dsl ###
+generated/
+
 ### STS ###
 .apt_generated
 .classpath

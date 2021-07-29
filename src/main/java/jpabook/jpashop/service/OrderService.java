@@ -73,7 +73,10 @@ public class OrderService {
      * 주문 검색
      */
     public List<Order> findOrders(OrderSearch orderSearch) {
-        return orderRepository.findAllByString(orderSearch);
+
+//        return orderRepository.findAllByString(orderSearch);
+        // query dsl 사용
+        return orderRepository.findAll(orderSearch);
     }
 
 }
