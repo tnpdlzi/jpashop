@@ -29,6 +29,7 @@ public class MemberService {
     }
 
     private void validateDuplicateMember(Member member) {
+        // findByName은 직접 만들어줘야한다.
         List<Member> findMembers = memberRepository.findByName(member.getName()); // DB에서 Unique 제약 조건을 잡아 줄 것.
         if (!findMembers.isEmpty()) {
             throw new IllegalStateException("이미 존재하는 회원입니다.");
@@ -44,13 +45,15 @@ public class MemberService {
     // 한 건만 조회
 //    @Transactional(readOnly = true) // 이러면 JPA가 조회하는 데서는 성능을 최적화 해 준다.
     public Member findOne(Long memberId) {
-        return memberRepository.findOne(memberId);
+//        return memberRepository.findOne(memberId);
+        // spring data jpa 사용.
+        return memberRepository.findById(memberId).get();
     }
 
 
     @Transactional
     public void update(Long id, String name) {
-        Member member = memberRepository.findOne(id);
+        Member member = memberRepository.findById(id).get();
         member.setName(name);
     }
 }
